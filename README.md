@@ -281,32 +281,22 @@ print(numpy.__version__)
 ```
 
 There are several ways to set this, but it is best to make sure that there's only one place that you
-have to edit the version number rather than multiple places. One method is to include the version
-number in your packages main `__init__.py` file by adding the line:
+have to edit the version number rather than multiple places. One method (used in this package) is to
+include the version number in your packages main `__init__.py` file by adding the line:
 
 ```python
 __version__ = "0.0.1"
 ```
 
-Then, within `setup.cfg` changing the `version` line to be:
+Then, within `setup.cfg`, the `version` line can be:
 
 ```
 version = attr: lancstro.__version__
 ```
 
-Another option, which I've used within this project is to use the
-[`setuptools-scm`](https://pypi.org/project/setuptools-scm/) package, which sets the version
-information based on the git repository's tag. So, to create a new version, you create a new git
-tag, e.g.,
-
-```
-git tag -a v0.0.1 -m "Version 0.0.1 of my repository"
-```
-
-> Note: you can create new tags on Github's web interface by [creating a new
-> release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#creating-a-release).
->
-> If you've created a tag in your local repository 
+Among the other options, a good one to use is through setting the version with a tools such as
+[`setuptools-scm`](https://pypi.org/project/setuptools-scm/), which gathers the version information
+from [git tags](https://git-scm.com/book/en/v2/Git-Basics-Tagging) in your repo.
 
 #### The MANIFEST.in file
 
@@ -331,6 +321,118 @@ Once you have the above structure you can install the package (from it's base di
 
 ```bash
 pip install .
+```
+
+That's it! Open up a Python terminal (from any location except in the package directory, otherwise
+it'll get confused!) and you should be able to do:
+
+```python
+import lancstro
+print(lancstro.__version__)
+0.0.1
+```
+
+or run the [`favourite_object.py`](bin/favourite_object.py) script from the command line:
+
+```console
+$ favourite_object.py -h
+usage: favourite_object.py [-h] name name
+
+Get a staff member's favourite object
+
+positional arguments:
+  name        The staff member's full name
+
+optional arguments:
+  -h, --help  show this help message and exit
+```
+
+You can then tell other people to clone your Github repo and install things in the same way, or even
+`pip install` directly from the repo with, e.g.:
+
+```bash
+$ pip install git+git://github.com/mattpitkin/lancstro.git#egg=lancstro
+```
+
+These will install the very latest code from the repo, so not necessarily a specific version
+(although that can be done if you've tagged a version or supply the git hash).
+
+### Releasing the package on PyPI
+
+Rather than getting people to install code directly from your Github repo, it is often better to
+publish versioned releases of your code. You can publish Python packages on the
+[PyPI](https://pypi.org/) (Python Package Index) repository from which they will then be `pip
+installable` by anyone!
+
+Firstly, you'll need to [register an account](https://pypi.org/account/register/) on PyPI. Anyone is
+able to do this. Secondly, you'll need to install the
+[`twine`](https://twine.readthedocs.io/en/latest/) package, which is used for uploading packages to
+PyPI.
+
+Within your repo's root directory (containing `setup.py`) you can now build a [Python
+wheel](https://pythonwheels.com/) (a zipped binary format of the package designed for speedier
+installation) containing your package with:
+
+```bash
+python setup.py bdist_wheel
+```
+
+> Note: if your code is pure Python, creating a wheel should work straightforwardly, but if not the
+> wheel generation may not work. In these cases you can just build a tarball containing the package
+> using:
+>
+> ```bash
+> python setup.py sdist
+> ```
+
+This should create a `dist/` directory containing a file with the extension `.whl`. This is the
+Python wheel.
+
+It is often best to first upload this to [PyPI's testing
+repository](https://packaging.python.org/guides/using-testpypi/) (you'll need to [register a
+separate account](https://test.pypi.org/account/register/) for this unfortunately), which can be
+done using `twine` with:
+
+```bash
+twine upload -r testpypi dist/*
+```
+
+You should be prompted for your username and password, although there are ways to set these as
+[environment variables](https://twine.readthedocs.io/en/latest/#environment-variables) or
+[using](https://twine.readthedocs.io/en/latest/#keyring-support)
+[`keyring`](https://pypi.org/project/keyring/), so that you don't have to enter them each time. If
+the upload is successful you should be able to see the project on the Test PyPI site, e.g., at
+https://test.pypi.org/project/lancstro/0.0.1/.
+
+You can test that the package installs correctly from the Test PyPI repository by running
+(potentially in a new virtual environment):
+
+```bash
+pip install -i https://test.pypi.org/simple/ lancstro
+```
+
+If you're happy with the package you can proceed to upload it to the main PyPI repository using:
+
+```bash
+twine upload dist/*
+```
+
+Et voilà! Now you just need to tell people to run:
+
+```bash
+pip install lancstro
+```
+
+to install your package. If they want to install a particular version they can use, e.g.,:
+
+```bash
+pip install lancstro==0.0.1
+```
+
+Or, if there's a lower or upper version that must be used the inequaltiy operators can be used instead, e.g.,:
+
+```bash
+pip install lancstro<=0.0.2
 ```
 
 ## Documentation

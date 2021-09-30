@@ -1,10 +1,6 @@
 [build-system]
 requires = [
     "setuptools>=43",
-    "setuptools_scm[toml]>=3.4",
     "wheel"
 ]
 build-backend = "setuptools.build_meta"
-
-[tool.setuptools_scm]
-write_to = "lancstro/_version.py"
