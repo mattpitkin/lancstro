@@ -6,6 +6,5 @@ from setuptools import setup
 
 # set it up!
 setup(
-    # use_scm_version=True,
+    use_scm_version=True,
 )
-
