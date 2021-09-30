@@ -1,23 +1,23 @@
 # Lancstro: an example of creating a Python package
 
 This repository and the following text is intended as a basic tutorial on creating and publishing a
-Python package. It was created for a seminar given to the Lancaster University [Obervational
+Python package. It was created for a seminar given to the Lancaster University [Observational
 Astrophysics
 group](https://www.lancaster.ac.uk/physics/research/astrophysics/observational-astrophysics/), but
 may be more widely applicable.
 
 ## What is a Python package
 
-In general, when talking about a Python package it means an set of Python modules and/or scipts
+In general, when talking about a Python package it means an set of Python modules and/or scripts
 and/or data, that are installable under a common namespace (the package's name). A package might
-also be referred to as a library. This is different than a collection of individual Python files
+also be referred to as a library. This is different from a collection of individual Python files
 that you have in a folder, which will not be under a common namespace and are only accessible if
 their path is in your `PYTHONPATH` or you use them from the directory in which they live.
 
 A couple of examples of common Python packages used in research in the physical sciences are:
 
-1. NumPy
-2. SciPy
+1. [NumPy](https://numpy.org/)
+2. [SciPy](https://www.scipy.org/scipylib/index.html)
 
 > Note: "namespace" basically refers to the name of the package as you would import it, e.g., if you
 > import numpy with `import numpy`, then you will access all NumPy's functions/classes/modules via
@@ -26,10 +26,10 @@ A couple of examples of common Python packages used in research in the physical 
 > numpy.sin(2.3)
 > ```
 
-A package can contain everything within it's namespace, or contain various submodules, e.g., parts
-that contain common functionality that naturally fits together in it's own namespace. For example,
-in NumPy, the [`random`](https://numpy.org/doc/stable/reference/random/index.html) submodule
-contains functions and classes for generating random numbers:
+A package can contain everything within a single namespace, or contain various submodules, e.g.,
+parts that contain common functionality that naturally fits together in it's own namespace. For
+example, in NumPy, the [`random`](https://numpy.org/doc/stable/reference/random/index.html)
+submodule contains functions and classes for generating random numbers:
 
 ```python
 import numpy
@@ -38,21 +38,25 @@ numpy.random.randn()  # generate a normally distributed random number
 
 ## Why package my code?
 
-So, why should you package your Python code rather than just having local scripts? Well, there are
-several reasons:
+So, why should you package (and publish) your Python code rather than just having local scripts?
+Well, there are several reasons:
 
 * It creates an installable package that can be imported without having to have the Python
   script/file in your path.
-* It creates a “versioned” package that can have specified features/dependencies.
+* It creates a “versioned” package that can have specified features/dependencies. This is very
+  important for reproducibility of results, where a specific code version used for an analysis
+  can be pointed to.
 * You can share you package with others (you can make it `pip installable` via
-  [PyPI](https://pypi.org/), or `conda installable` via [conda-forge](https://conda-forge.org/))
+  [PyPI](https://pypi.org/), or `conda installable` via [conda-forge](https://conda-forge.org/)),
+  which can be important when working with collaborators.
 * You will gain developer kudos! Software development is a major skill you learn during your
   research, so show off what you’ve done and add it to your CV.
 
 ## Project structure
 
-To create a Python package you should structure the directory containing you code in the following way
-(the directory name containing this information does not have to match the package name):
+To create a Python package you should structure the directory containing you code in the following
+way (the directory name containing this information does not have to match the package name, but
+often they will):
 
 ```
 repo/
@@ -103,7 +107,7 @@ system and ideally hosted somewhere that provides a backup. It is now very commo
 [Github](https://github.com/)/[Gitlab](https://about.gitlab.com/)/[bitbucket](https://bitbucket.org/product/)
 or similar. On Github you can have public or private repositories.
 
-If using Github, it is best to start the project by creating new repository there first and then
+If using Github, it is best to start the project by creating new repository there first, then
 cloning that repository to you machine before then adding in your code. When creating a Github
 repository (I might use "_repo_" for short later) you can initialise it with a [license
 file](#the-license-file) and a [README file](#the-readmemd-file).
@@ -115,7 +119,7 @@ file](#the-license-file) and a [README file](#the-readmemd-file).
 
 You should give your code a license describing the terms of use and copyright. Often you'll want
 your code to be open source, so a good choice is the [MIT
-license](https://opensource.org/licenses/MIT), which is very permissive in terms of reuse of your
+license](https://opensource.org/licenses/MIT), which is very permissive in terms of reuse of the
 code. A [variety of other open source licenses](https://opensource.org/licenses/category) are
 available, although these often differ slighty on the permissiveness, i.e., whether others can use
 your code in commercial and non-open source projects or not.
@@ -140,7 +144,7 @@ elsewhere.
 
 In this case the suggested format for the file is
 [Markdown](https://daringfireball.net/projects/markdown/) (the `.md` extension), but it could be a
-plain ascii text file for [reStructedText](https://docutils.sourceforge.io/rst.html). Markdown and
+plain ascii text file or [reStructedText](https://docutils.sourceforge.io/rst.html). Markdown and
 reStructuredText will be automatically rendered if you host your package on, e.g.,
 [Github](https://github.com/).
 
@@ -162,16 +166,11 @@ from setuptools import setup
 setup()
 ```
 
-> Note: if using pip version greater than 19 for installing code, and/or if you're package contains
-> a `pyproject.toml` file that specifies `setuptools>=40.9.0`, you don't actually
-> [need](https://setuptools.pypa.io/en/latest/setuptools.html#setup-cfg-only-projects) the
-> `setup.py` and you can just use the `setup.cfg` file.
-
 The layout of the configuration file is described
-[here](https://setuptools.pypa.io/en/latest/userguide/declarative_config.html), and I'll reproduce
-the [one from this project](setup.cfg) below with additional inline comments:
+[here](https://setuptools.pypa.io/en/latest/userguide/declarative_config.html). I'll reproduce the
+[one from this project](setup.cfg) below with additional inline comments:
 
-```
+```toml
 [metadata]
 # the name of the package
 name = lancstro
@@ -210,7 +209,7 @@ classifiers =
     Topic :: Scientific/Engineering :: Astronomy
     Topic :: Scientific/Engineering :: Physics
 
-# the package's current version (this isn't actually in the file, see later!)
+# the package's current version (this isn't actually in the file in this repo, see later!)
 version = 0.0.1
 
 [options]
@@ -239,21 +238,20 @@ scripts =
 
 [options.package_data]
 # any data files to include in the package (lancsrto shows they are in the
-# lancstro packge and then the paths are given)
+# lancstro package and then the paths are given)
 lancstro = 
     data/office_numbers.txt
-
 ```
 
 For a list of the standard "classifiers" that you can add see [here](https://pypi.org/classifiers/).
 
-In this project we have added some "data" files that come bundled with the package. It is not
-required to include data in your package.
+In this project, we have added a "data" file that come bundled with the package. It is not required
+to include data in your package.
 
 #### Adding a package version
 
 In the above case the package version is set manually in the `setup.cfg` file. It is up to you how
-you define the version string, but it is often good to used [Semantic
+you define the version string, but it is often good to use [Semantic
 Versioning](https://semver.org/). In this format the version consists of three full-stop separated
 numbers: MAJOR.MINOR.PATCH.
 
@@ -267,7 +265,7 @@ The Semantic Versioning site gives the following definitions of when to change t
 > MAJOR.MINOR.PATCH format.
 
 To update the version you can just edit the value in the `setup.cfg` file. When you
-[install](#installing-the-package) this will be the packages version.
+[install](#installing-the-package) this will be the package's version.
 
 This allows the package manager (e.g., pip) to know what version of the package is installed.
 However, it is often useful to provide the version number as a variable within the package itself,
@@ -282,7 +280,8 @@ print(numpy.__version__)
 
 There are several ways to set this, but it is best to make sure that there's only one place that you
 have to edit the version number rather than multiple places. One method (used in this package) is to
-include the version number in your packages main `__init__.py` file by adding the line:
+include the version number in your package's main [`__init__.py`](cwinpy/__init__.py) file by adding
+the line:
 
 ```python
 __version__ = "0.0.1"
@@ -302,26 +301,34 @@ from [git tags](https://git-scm.com/book/en/v2/Git-Basics-Tagging) in your repo.
 
 You can specify which additional files that you want to be bundled with the package's source
 distribution using a [`MANIFEST.in`](https://packaging.python.org/guides/using-manifest-in/). With
-modern versions of setuptools (e.g., greater than 43) most of the standard file such as the README
+modern versions of setuptools (e.g., greater than 43) most of the standard files such as the README
 file and setup files, and any license file given in `setup.cfg`, are automatically included in the
-source distribution by default.
+source distribution by default. Hence, not include a `MANIFEST.in` file in this repository.
 
 However, you may want to include other files. If you had, say, a `test` directory with multiple
-Python test scripts that you want in the package, you could add and `MANIFEST.in` file containing:
+Python test scripts that you wanted in the package, you could add and `MANIFEST.in` file containing:
 
 ```
 recursive-include test/ *.py
 ```
 
-which will include all `.py` file within `test`.
+which will include all `.py` files within `test`.
 
 ### Installing the package
 
-Once you have the above structure you can install the package (from it's base directory) using:
+It is best practice to install Python packages using [pip](https://pip.pypa.io/en/stable/) (the
+"package installer for Python"), so you should have that installed. Once you have the above
+structure you can install the package (from it's root directory) using:
 
 ```bash
 pip install .
 ```
+
+where the `.` just refers to the current directory. The standard install locations are described
+[here](https://docs.python.org/3/install/index.html#how-installation-works), but I would recommend
+using [virtual environments](https://realpython.com/python-virtual-environments-a-primer/), such as
+provided via [conda](https://docs.conda.io/en/latest/), in which case the package will be installed
+only in the environment.
 
 That's it! Open up a Python terminal (from any location except in the package directory, otherwise
 it'll get confused!) and you should be able to do:
@@ -354,10 +361,10 @@ You can then tell other people to clone your Github repo and install things in t
 $ pip install git+git://github.com/mattpitkin/lancstro.git#egg=lancstro
 ```
 
-These will install the very latest code from the repo, so not necessarily a specific version
-(although that can be done if you've tagged a version or supply the git hash).
+These methods will install the very latest code from the repo, so not necessarily a specific version
+(although that can be done if you've tagged a version or work from a particular the git hash).
 
-### Releasing the package on PyPI
+### Publishing the package on PyPI
 
 Rather than getting people to install code directly from your Github repo, it is often better to
 publish versioned releases of your code. You can publish Python packages on the
@@ -374,7 +381,7 @@ wheel](https://pythonwheels.com/) (a zipped binary format of the package designe
 installation) containing your package with:
 
 ```bash
-python setup.py bdist_wheel
+python setup.py bdist_wheel sdist
 ```
 
 > Note: if your code is pure Python, creating a wheel should work straightforwardly, but if not the
@@ -385,13 +392,14 @@ python setup.py bdist_wheel
 > python setup.py sdist
 > ```
 
-This should create a `dist/` directory containing a file with the extension `.whl`. This is the
-Python wheel.
+This should create a `dist/` directory containing a file with the extension `.whl` (built by
+including the `bdist_wheel` argument). This is the Python wheel. It should also contain a tarball of
+the package (built by including the `sdist` argument).
 
-It is often best to first upload this to [PyPI's testing
+It is often best to first upload these products to [PyPI's testing
 repository](https://packaging.python.org/guides/using-testpypi/) (you'll need to [register a
-separate account](https://test.pypi.org/account/register/) for this unfortunately), which can be
-done using `twine` with:
+separate account](https://test.pypi.org/account/register/) for this), which can be done using
+`twine` with:
 
 ```bash
 twine upload -r testpypi dist/*
@@ -423,25 +431,218 @@ Et voilà! Now you just need to tell people to run:
 pip install lancstro
 ```
 
-to install your package. If they want to install a particular version they can use, e.g.,:
+to install your [package](https://pypi.org/project/lancstro/0.0.1/). If they want to install a
+particular version they can use, e.g.,:
 
 ```bash
 pip install lancstro==0.0.1
 ```
 
-Or, if there's a lower or upper version that must be used the inequaltiy operators can be used instead, e.g.,:
+Or, if there's a lower or upper version that must be used the inequality operators can be used
+instead, e.g.,:
 
 ```bash
 pip install lancstro<=0.0.2
 ```
 
+### Publishing the package on conda-forge
+
+You may (and _should_!) install Python packages in a virtual environment that is relevant for the
+particular project that you are working on. A popular virtual environment/package manager tool is
+[conda](https://docs.conda.io/en/latest/), which is installed as part of
+[Anaconda](https://www.anaconda.com/). Conda is a package manager for a variety of software, not
+just Python packages, so if creating a conda package for your Python project you can make it
+dependent on specific versions of non-Python libraries (maybe you want to use a specific version of
+[GSL](https://www.gnu.org/software/gsl/)!).
+
+You can [build a conda
+package](https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/build-pkgs.html)
+and host it in your own account on Anaconda.org. However, a popular repository for hosting projects
+is [conda-forge](https://conda-forge.org/). An advantage of hosting your package on conda-forge is
+that it will have been automatically verified by a test suite and reviewed by an actual person, so
+hopefully will be more robust for other users.
+
+Getting a package on conda-forge is quite a bit more involved than uploading to PyPI, although if
+you already have your package on PyPI that is an advantage (and is what I'll assume in the example
+below). The basic steps are given [here](https://conda-forge.org/#add_recipe), but you will need a
+Github account. I'll detail these a bit more below.
+
+> Note: you will need to have uploaded the package source tarball to PyPI for these instructions to
+> work.
+
+1. Go to https://github.com/conda-forge/staged-recipes and fork the repository to your own account.
+2. In your fork of the repository create a new branch. If you've cloned your fork of the repository
+   you might do:
+
+   ```bash
+   git checkout -b add_lancstro_to_conda_forge
+   ```
+3. In the `recipes/` directory create a new directory with the name of your package and copy the
+   [`meta.yaml`](https://github.com/conda-forge/staged-recipes/blob/main/recipes/example/meta.yaml)
+   file from the `example/` directory into it:
+
+   ```bash
+   cd recipes
+   mkdir lancstro
+   cp example/meta.yaml lancstro
+   ```
+4. Open up the copied `meta.yaml` file in a text editor and change it to look something like below
+   (I've removed a lot of the comments):
+
+```yaml
+{% set name = "lancstro" %}
+{% set version = "0.0.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  # get the SHA256 check sum of the file (on the PyPI page for the package
+  # click on "Download files" and then "View" under the "Hashes" heading)
+  sha256: 2873bb17f5e8cc84ac19e22307cc8567273fcdc57e5dd1f57fe52b2b1a6b1da3
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    # packages required to build and install the package
+    - python
+    - pip
+    - setuptools
+  run:
+    # packges required to run the package
+    - astropy
+    - astroquery >= 0.4.3
+    - python
+
+test:
+  # make sure the package can at least be imported (other tests can be added)
+  imports:
+    - lancstro
+
+about:
+  home: https://github.com/mattpitkin/lancstro
+  license: MIT
+  license_family: MIT
+  summary: 'My great package'
+  description: |
+    An example package for showing how to package a package.
+  doc_url: https://lancstro.readthedocs.io/
+  dev_url: https://github.com/mattpitkin/lancstro
+
+extra:
+  recipe-maintainers:
+    # github ids for maintainers
+    - mattpitkin
+```
+5. Commit the changes and push them to your fork of the `staged-recipes` repository.
+6. Open up a pull request (PR) between your branch and conda-forge's `staged-recipes` repo. Call the
+   PR something like "Add lancstro". Create the pull request.
+7. After a while check that the test builds in the PR have completed successfully. If not try and
+   fix the issue by editing the (forked) `meta.yaml` file.
+8. Answer and respond to any questions/comments from the assigned reviewer (you shouldn't have to
+   assigned a reviewer, but sometimes you need to prod the appropriate channel).
+8. Wait for a reviewer to sign-off and merge the PR.
+
+At this point your package should be installable from conda-forge using, e.g.,:
+
+```bash
+conda install -c conda-forge lancstro
+```
+
 ## Documentation
+
+You should try not to just write code for yourself. Academic results should be transparent and
+reproducible, so the code you write and use should be usable by others, therefore _Write The Docs_!
+
+Creating documentation for your code doesn't just mean that your code should contain comments (which
+it definitely should!), but there should also be documentation (on, e.g., a website) on how to
+install and use your code. This should include information on the code's
+[API](https://en.wikipedia.org/wiki/API) (just a fancy way of saying show how to use the functions
+and classes in your package). It is also important to have examples of use cases as it's often good
+to "_show not tell_". You can store the documentation source files in the same repository as you
+package (e.g., a `docs/` folder).
+
+I'm not going to describe in detail how to add documentation to a package (I haven't added it into
+this package yet, but I may add this in the future!), but will just point towards some resources.
+Two packages that you may want to look into for building documentation are:
+
+1. [Sphinx](https://www.sphinx-doc.org/en/master/)
+2. [mkdocs](https://www.mkdocs.org/)
+
+Both of these allow you to write documentation in Markdown or reStructuredText and automatically
+include (via various extensions/plugins) code docstrings. They can also include Jupyter notebooks.
+
+For repositories hosted on Github, you can easily and freely set up building and hosting of the
+documentation on [Read the Docs](https://readthedocs.org/). You can also publish your [documentation
+directly](https://github.blog/2016-08-22-publish-your-project-documentation-with-github-pages/) on
+Github using [Github Pages](https://pages.github.com/).
+
+There is an example of using Sphinx for documenting a package
+[here](https://matplotlib.org/sampledoc/).
+
+### Contributions
+
+Your code may be the product of many developer's work. If it's open source you may also be open to
+having other developers contributing to it. You should therefore have instructions on how people
+should contribute and guidelines on the expected behaviour of contributors.
+
+Often you will see a `CONTRIBUTING.md` Markdown file in package repositories that describes how to
+contribute. If a contributor wants to add/request a new feature, or fix a bug, then they may want to
+open a Github issue (or post on an appropriate forum) to see if the feature is useful/bug is known.
+If they have coded up a bug fix/feature then adding that into the repository often involves a
+"[fork-and-pull request](https://gist.github.com/Chaser324/ce0505fbed06b947d962)" workflow process
+(this is the process for many projects, e.g.,
+[NumPy](https://numpy.org/doc/stable/dev/development_workflow.html),
+[astropy](https://docs.astropy.org/en/latest/development/workflow/development_workflow.html)):
+
+1. fork the repository to your own Github account
+2. create a new branch on your fork for development
+3. add and commit your changes making sure that they work and don't break the package
+4. push your commits to your fork
+5. create a pull request with the upstream (i.e., original) repository
+6. respond to any comments on the change
+7. merge the request into the original repository
+
+#### Code of conduct
+
+You should also consider adding a code of conduct to your project outlining expected behaviours
+during interactions between developers/contributors. There are many examples of code's of conduct
+that you can often use verbatim (many are licensed using [Creative
+Commons](https://creativecommons.org/licenses/by/4.0/) licenses) or adapt to your needs:
+
+* [astropy code of conduct](https://www.astropy.org/code_of_conduct.html)
+* [NumFOCUS code of conduct](https://numfocus.org/code-of-conduct)
+* [Python Community code of conduct](https://www.python.org/psf/conduct/)
+
+## Making code citable
+
+Your code is a very large part of your academic output, so it's good to make your package citable.
+This way you can receive appropriate acknowledgement when people use it and show evidence of your
+output. There are a variety of ways of doing this (skewed towards Astro/Physics):
+
+* For packages on Github, link your repository to [Zenodo](https://zenodo.org/) which will provide
+  a citable [DOI](https://www.doi.org/) for you project.
+* Get it linked onto the [Astrophysics Source Code Library](https://ascl.net/) (ASCL). This is
+  indexed on NASA ADS, but does not give a DOI.
+* Write a paper for the [Journal of Open Source Software](https://joss.theoj.org/) (JOSS). This is a
+  very light touch, but peer reviewed publication that also provides a DOI and is indexed on NASA
+  ADS. It does require you to have proper documentation for your package as an acceptable level of
+  documentation is part of the review.
+* Write a paper for a standard journal. Many journals (_MNRAS_, _ApJ_, _PASP_, etc) do now accept
+  papers on software, although it's likely that they should also include a description of a
+  practical use case for the software.
 
 ## Not covered here!
 
 There are many additional useful things that I've not covered here. These include:
 
-* using extry point console scripts rather than, or as well as, including executable scripts
+* using entry point console scripts rather than, or as well as, including executable scripts
 * including C/C++/FORTRAN code, or [Cython](https://cython.org/)-ized code, in your package
 * creating a [test suite](https://docs.pytest.org/) for your package (and checking its
   [coverage](https://pytest-cov.readthedocs.io/en/latest/))
