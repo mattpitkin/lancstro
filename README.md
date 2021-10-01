@@ -537,6 +537,9 @@ separate account](https://test.pypi.org/account/register/) for this), which can 
 twine upload -r testpypi dist/*
 ```
 
+> Note: make sure the `dist/` directory is empty before generating the new package version with
+> `python setup.py bdist_wheel sdist` otherwise you might end up uploading multiple versions.
+
 You should be prompted for your username and password, although there are ways to set these as
 [environment variables](https://twine.readthedocs.io/en/latest/#environment-variables) or
 [using](https://twine.readthedocs.io/en/latest/#keyring-support)
