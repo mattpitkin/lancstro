@@ -1,7 +1,8 @@
-from astropy.constants import G, c
+from astropy.constants import G, c, sigma_sb, L_bol0
 from astropy.modeling.physical_models import BlackBody
-from astropy.units import K, kg
+from astropy.units import K, kg, m
 from astroquery.simbad import Simbad
+from numpy import log10, pi
 
 
 class GroupMember:
@@ -29,6 +30,8 @@ class GroupMember:
             The group member's black body temperature. Defaults to 0 K.
         mass: float
             The group member's mass (kg).
+        height: float
+            The group member's height (m).
         """
 
         self.name = name
@@ -40,16 +43,17 @@ class GroupMember:
         self.favourite_object = kwargs.get("favourite_object", None)
         self.T = kwargs.get("T", 0)
         self.mass = kwargs.get("mass", None)
+        self.height = kwargs.get("height", None)
 
     def __str__(self):
         return f"{self.name}: {self.position}"
-        
+
     @property
     def email(self):
         """
         The group member's email address.
         """
-    
+
         names = self.name.split()
         initial = names[0][0].lower()
         surname = names[1].strip().lower()
@@ -106,19 +110,19 @@ class GroupMember:
         """
         The group member's black-body temperature.
         """
-        
+
         return self._T
-        
+
     @T.setter
     def T(self, T):
         if not isinstance(T, (float, int)):
             raise TypeError("Temperature must be a positive number")
-            
+
         if T < 0.0:
             raise TypeError("Temperature must be a positive number")
-            
+
         self._T = T * K
-        
+
         # get astropy Black Body object
         self._bb = BlackBody(self._T)
 
@@ -139,8 +143,28 @@ class GroupMember:
         else:
             if mass < 0.0:
                 raise ValueError("Mass must be a positive number")
-                
+
             self._mass = mass * kg
+
+    @property
+    def height(self):
+        """
+        The group member's height in m.
+        """
+
+        return self._height
+
+    @height.setter
+    def height(self, height):
+        if height is None:
+            self._height = None
+        elif not isinstance(height, (float, int)):
+            raise TypeError("Height must be a number")
+        else:
+            if height <= 0.0:
+                raise ValueError("Height must be a positive number")
+
+            self._height = height * kg
 
     @property
     def bolometric_flux(self):
@@ -148,17 +172,43 @@ class GroupMember:
         The group member's bolometric flux based on their black body
         temperature.
         """
-        
+
         return self._bb.bolometric_flux
+
+    @property
+    def bolometric_luminosity(self):
+        """
+        The group member's bolometric luminosity based on their black body
+        temperature and assuming they are a cylinder with a diameter of 30 cm
+        and a length given by their height.
+        """
+
+        if self.height is None:
+            return None
+
+        surfarea = pi * 0.15 ** 2 * self.height
+
+        return sigma_sb * surfarea * self.T ** 4
+
+    @property
+    def absolute_magnitude(self):
+        """
+        The group members absolute bolometric magnitude assuming they are a
+        black body.
+        """
+
+        if self.bolometric_luminosity is None:
+            return None
+
+        return -2.5 * log10(self.bolometric_luminosity.value / L_bol0.value)
 
     @property
     def schwarschild_radius(self):
         """
         The group member's Schwarschild radius based on their mass.
         """
-        
+
         if self.mass is None:
             return None
         else:
             return 2 * self.mass * G / c ** 2
-
