@@ -8,11 +8,13 @@ may be more widely applicable.
 
 ## What is a Python package
 
-In general, when talking about a Python package it means an set of Python modules and/or scripts
-and/or data, that are installable under a common namespace (the package's name). A package might
-also be referred to as a library. This is different from a collection of individual Python files
-that you have in a folder, which will not be under a common namespace and are only accessible if
-their path is in your `PYTHONPATH` or you use them from the directory in which they live.
+In general, when talking about a [Python
+package](https://docs.python.org/3/tutorial/modules.html#packages) it means an set of Python modules
+and/or scripts and/or data, that are installable under a common namespace (the package's name). A
+package might also be referred to as a library. This is different from a collection of individual
+Python files that you have in a folder, which will not be under a common namespace and are only
+accessible if their path is in your `PYTHONPATH` or you use them from the directory in which they
+live.
 
 A couple of examples of common Python packages used in research in the physical sciences are:
 
@@ -87,7 +89,7 @@ lancstro/
 ├── setup.py
 ├── lancstro/
 │   ├── __init__.py
-│   ├── base.py.py
+│   ├── base.py
 |   ├── members/
 |   |   ├── __init__.py
 |   |   └── staff.py
@@ -314,6 +316,136 @@ recursive-include test/ *.py
 
 which will include all `.py` files within `test`.
 
+### The package source directory
+
+In this project the directory containing the package source code, i.e., the Python files, is called
+`lancstro/`. In this case has two files in it (although it can contain any number of Python files, each of
+which will be a module that is available in the package):
+
+1. [`__init__.py`](lancstro/__init__.py)
+2. [`base.py`](lancstro/base.py)
+
+The [`base.py`](lancstro/base.py) file contains some Python code, in this case a class called
+`GroupMembers`, which is part of our package.
+
+The [`__init__.py`](lancstro/__init__.py) file is very important. It is what tells Python that this
+directory is a [package](https://docs.python.org/3/tutorial/modules.html#packages). The
+`__init__.py` file can be completely empty, but it *does* need to be present. It can contain any
+Python code (you could define your whole package in the `__init__.py` file if you wanted), but often
+it is used to import things from submodules/subpackages into the package's namespace. In this case
+the `__init__.py` file contains the following code:
+
+```python
+from .base import GroupMember
+from . import members
+
+__version__ = "0.0.2"  # the version number of the code
+```
+
+The first line imports the `GroupMember` class from the [`base.py`](lancstro/base.py) file, so that
+the `GroupMember` class can be used from the `lancstro` namespace rather than the `lancstro.base`
+namespace. E.g., this means that when using the package we could do:
+
+```
+from lancstro import GroupMember
+```
+
+rather than
+
+```
+from lancstro.base import GroupMember
+```
+
+although both will work. You may want to do this for commonly used function or classes, but it is
+not necessary.
+
+The `lancstro/` directory also contains the directory `members/`, which is a subpackage of the
+package (any subpackage must also contain their own [`__init__.py`](lancstro/members/__init__.py)
+file). The second line of the `__init__.py` file imports the `members` submodule into the `lancstro`
+namespace. E.g., if I just do:
+
+```python
+import lancstro
+```
+
+then I can access things from the `members` subpackage using
+
+```python
+lancstro.members.staff
+```
+
+rather than doing:
+
+```
+from lancstro.members import staff
+```
+
+although (again) both will work.
+
+The final line in the `__init__.py` file sets the [version number](#adding-a-package-version) of the
+package.
+
+#### The data directory
+
+You might want to include some data files in your package, e.g., a look-up table for a calculation,
+a catalogue, etc. In this case I've added a JSON file,
+[`office_numbers.txt`](lancstro/data/office_numbers.txt), in a directory called `data/` (any name
+can be used, but `data` seems quite sensible!). This directory does not need an `__init__.py` as it
+is not a package. To include this file in the package you need to have the line:
+
+```
+include_package_data = True
+```
+
+in your `setup.cfg` file and also list it in the `[options.package_data]` section, e.g.,:
+
+```
+[options.package_data]
+lancstro = 
+    data/office_numbers.txt
+```
+
+#### Intra-package references
+
+In your package you can
+[import](https://docs.python.org/3/tutorial/modules.html#intra-package-references) things from the
+various submodules/subpackages using the `.` notation.
+
+For example, to import things between Python files in the same part of the package (e.g., at the
+`lancstro/` level), you can do:
+
+```python
+from .base import GroupMember
+```
+
+which imports from the `base.py` file.
+
+If a file in a subpackage wants to import from the level below, e.g., a Python file in
+`lancstro/members` wants to import from a file in `lancstro/`, the you could use:
+
+```python
+from ..base import GroupMember
+```
+
+I.e, use two dots `..` to specify going down one package level.
+
+### The bin directory
+
+You may want to include executable scripts in your package. It is good to place them in a directory
+called, for example, `bin/` in the root directory of your repository. To make these part of the
+package you need to list these in the `setup.cfg` file in a `scripts` section, e.g.,
+
+```
+scripts =
+    bin/favourite_object.py
+```
+
+Once the packages are installed these scripts should be in you path and usable with, e.g.,:
+
+```bash
+$ favourite_object.py -h
+```
+
 ### Installing the package
 
 It is best practice to install Python packages using [pip](https://pip.pypa.io/en/stable/) (the
@@ -410,7 +542,7 @@ You should be prompted for your username and password, although there are ways t
 [using](https://twine.readthedocs.io/en/latest/#keyring-support)
 [`keyring`](https://pypi.org/project/keyring/), so that you don't have to enter them each time. If
 the upload is successful you should be able to see the project on the Test PyPI site, e.g., at
-https://test.pypi.org/project/lancstro/0.0.1/.
+https://test.pypi.org/project/lancstro/0.0.2/.
 
 You can test that the package installs correctly from the Test PyPI repository by running
 (potentially in a new virtual environment):
@@ -431,11 +563,11 @@ Et voilà! Now you just need to tell people to run:
 pip install lancstro
 ```
 
-to install your [package](https://pypi.org/project/lancstro/0.0.1/). If they want to install a
+to install your [package](https://pypi.org/project/lancstro/0.0.2/). If they want to install a
 particular version they can use, e.g.,:
 
 ```bash
-pip install lancstro==0.0.1
+pip install lancstro==0.0.2
 ```
 
 Or, if there's a lower or upper version that must be used the inequality operators can be used
@@ -619,6 +751,20 @@ Commons](https://creativecommons.org/licenses/by/4.0/) licenses) or adapt to you
 * [astropy code of conduct](https://www.astropy.org/code_of_conduct.html)
 * [NumFOCUS code of conduct](https://numfocus.org/code-of-conduct)
 * [Python Community code of conduct](https://www.python.org/psf/conduct/)
+
+#### Code style
+
+You may want to enforce a particular style for your code. Many projects follow the
+[PEP8](https://www.python.org/dev/peps/pep-0008/) style guide. There are packages that you can run
+on your code to automatically make them conform to this style, e.g.,
+[black](https://black.readthedocs.io/en/stable/) or [flake8](https://flake8.pycqa.org/en/latest/),
+so you should tell contributors to run these on any code they submit (and make sure you run them
+yourself!). You can also add the [pep8speaks](https://pep8speaks.com/) app on Github that will check
+that any pull request conforms to PEP8 and inform the committer of any violations of the style.
+
+You can force checks to happen automatically by using the [pre-commit](https://pre-commit.com/)
+package to add ["pre-commit" hooks](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) to
+git, so that it automatically runs, e.g., black, on any committed code.
 
 ## Making code citable
 
