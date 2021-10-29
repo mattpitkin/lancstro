@@ -9,7 +9,7 @@ may be more widely applicable.
 ## What is a Python package
 
 In general, when talking about a [Python
-package](https://docs.python.org/3/tutorial/modules.html#packages) it means an set of Python modules
+package](https://docs.python.org/3/tutorial/modules.html#packages) it means a set of Python modules
 and/or scripts and/or data, that are installable under a common namespace (the package's name). A
 package might also be referred to as a library. This is different from a collection of individual
 Python files that you have in a folder, which will not be under a common namespace and are only
@@ -22,14 +22,14 @@ A couple of examples of common Python packages used in research in the physical 
 2. [SciPy](https://www.scipy.org/scipylib/index.html)
 
 > Note: "namespace" basically refers to the name of the package as you would import it, e.g., if you
-> import numpy with `import numpy`, then you will access all NumPy's functions/classes/modules via
+> import NumPy with `import numpy`, then you will access all NumPy's functions/classes/modules via
 > the `numpy` namespace:
 > ```python
 > numpy.sin(2.3)
 > ```
 
 A package can contain everything within a single namespace, or contain various submodules, e.g.,
-parts that contain common functionality that naturally fits together in it's own namespace. For
+parts that contain common functionality that naturally fits together in its own namespace. For
 example, in NumPy, the [`random`](https://numpy.org/doc/stable/reference/random/index.html)
 submodule contains functions and classes for generating random numbers:
 
